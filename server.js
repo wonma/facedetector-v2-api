@@ -11,27 +11,25 @@ app.listen(3000, () => {
 const database = {
   users: [
     {
-      id: 100,
+      id: '100',
       email: 'wonmadesign@gmail.com',
       firstName: 'Wonmi',
       lastName: 'Kwon',
       password: '12345',
       createdDate: new Date(),
       activity: {
-        recentScore: 0,
         totalScore: 100,
         totalCredit: 300
       }
     },
     {
-      id: 101,
+      id: '101',
       email: 'josh.thomp86@gmail.com',
       firstName: 'Josh',
       lastName: 'Thompson',
       password: '678910',
       createdDate: new Date(),
       activity: {
-        recentScore: 0,
         totalScore: 200,
         totalCredit: 250
       }
@@ -96,14 +94,13 @@ app.post('/signin', (req, res) => {
 app.post('/register', (req, res) => {
   const { email, fisrtName, lastName, password } = req.body;
   database.users.push({
-    id: 103,
+    id: '103',
     email: email,
     firstName: fisrtName,
     lastName: lastName,
     password: password,
     createdDate: new Date(),
     activity: {
-      recentScore: 0,
       totalScore: 0,
       totalCredit: 300
     }
@@ -112,9 +109,19 @@ app.post('/register', (req, res) => {
 });
 
 app.put('/image', (req, res) => {
-  const { totalScore, totalCredit, recentScore } = req.body;
-  users[0].activity.totalScore += recentScore;
-  res.send(users[0].activity.totalScore); // 이게 안되는 이유 모르겠음
+  const { id, recentScore } = req.body;
+  let isIdFound = false;
+  database.users.forEach(user => {
+    if (user.id === id) {
+      user.activity.totalScore += recentScore;
+      user.activity.totalCredit -= 10;
+      isIdFound = true;
+      res.json(user.activity);
+    }
+  });
+  if (!isIdFound) {
+    res.status(400).json('no user found.');
+  }
 
   // [질문] 왜 route이름이 image가 되었는지 잘 모르겠음.
   // [질문] 이 totalScore, totalCredit 업뎃하는거는 DB내에서 로직으로 할 수 있나?
@@ -134,7 +141,6 @@ app.get('/profile/:id', (req, res) => {
       res.json(user);
     }
   });
-
   if (!isIdFound) {
     res.status(400).json('no user found');
   }
