@@ -8,48 +8,82 @@ app.listen(3000, () => {
   console.log('app is runnning on port 3000');
 });
 
-// Fake DB
-const users = [
-  {
-    id: 100,
-    email: 'wonmadesign@gmail.com',
-    firstName: 'Wonmi',
-    lastName: 'Kwon',
-    password: '12345',
-    createdDate: new Date(),
-    activity: {
-      recentScore: 0,
-      totalScore: 100,
-      totalCredit: 300
+const database = {
+  users: [
+    {
+      id: 100,
+      email: 'wonmadesign@gmail.com',
+      firstName: 'Wonmi',
+      lastName: 'Kwon',
+      password: '12345',
+      createdDate: new Date(),
+      activity: {
+        recentScore: 0,
+        totalScore: 100,
+        totalCredit: 300
+      }
+    },
+    {
+      id: 101,
+      email: 'josh.thomp86@gmail.com',
+      firstName: 'Josh',
+      lastName: 'Thompson',
+      password: '678910',
+      createdDate: new Date(),
+      activity: {
+        recentScore: 0,
+        totalScore: 200,
+        totalCredit: 250
+      }
     }
-  },
-  {
-    id: 101,
-    email: 'josh.thomp86@gmail.com',
-    firstName: 'Josh',
-    lastName: 'Thompson',
-    password: '678910',
-    createdDate: new Date(),
-    activity: {
-      recentScore: 0,
-      totalScore: 200,
-      totalCredit: 250
-    }
-  }
-];
+  ]
+};
+
+// Fake DB - My Answer
+// const users = [
+//   {
+//     id: 100,
+//     email: 'wonmadesign@gmail.com',
+//     firstName: 'Wonmi',
+//     lastName: 'Kwon',
+//     password: '12345',
+//     createdDate: new Date(),
+//     activity: {
+//       recentScore: 0,
+//       totalScore: 100,
+//       totalCredit: 300
+//     }
+//   },
+//   {
+//     id: 101,
+//     email: 'josh.thomp86@gmail.com',
+//     firstName: 'Josh',
+//     lastName: 'Thompson',
+//     password: '678910',
+//     createdDate: new Date(),
+//     activity: {
+//       recentScore: 0,
+//       totalScore: 200,
+//       totalCredit: 250
+//     }
+//   }
+// ];
 
 app.get('/', (req, res) => {
   // root route(?)에 GET하여 요청하는 정보는 뭘까? 추측: index.html문서가 될 것 같습니다.
-  res.send('success');
+  res.json(database.users);
 });
 
 app.post('/signin', (req, res) => {
   // 1. Read request
   const { email, password } = req.body;
-  if (email === users[0].email && password === users[0].password) {
-    res.send('login permitted!');
+  if (
+    email === database.users[0].email &&
+    password === database.users[0].password
+  ) {
+    res.json('login permitted!');
   } else {
-    res.send('user not found');
+    res.status(400).json('user not found');
   }
   // 2. Check with DB & Send response
 
@@ -59,7 +93,23 @@ app.post('/signin', (req, res) => {
   // 이미 hash된것이 보인다.. 이런건가요?
 });
 
-// app.post('/register', (req, res) => {});
+app.post('/register', (req, res) => {
+  const { email, fisrtName, lastName, password } = req.body;
+  database.users.push({
+    id: 103,
+    email: email,
+    firstName: fisrtName,
+    lastName: lastName,
+    password: password,
+    createdDate: new Date(),
+    activity: {
+      recentScore: 0,
+      totalScore: 0,
+      totalCredit: 300
+    }
+  });
+  res.json(database.users[database.users.length - 1]);
+});
 
 app.put('/image', (req, res) => {
   const { totalScore, totalCredit, recentScore } = req.body;
