@@ -125,10 +125,19 @@ app.put('/image', (req, res) => {
 });
 
 app.get('/profile/:id', (req, res) => {
-  // [질문] 로그인 후 response로 받은 id를 이용하여 연이은 request를 하는건가?
-  console.log(req.params.id);
-  res.send(users[0].activity);
-  // 유저의 사용현황 object를 통으로 response로 받아서, 유저의 대쉬보드에 개별화된 정보가 채워짐.
+  const { id } = req.params;
+  // id는 스트링임!!!!!!대박!!!
+  let isIdFound = false;
+  database.users.forEach(user => {
+    if (user.id == id) {
+      isIdFound = true;
+      res.json(user);
+    }
+  });
+
+  if (!isIdFound) {
+    res.status(400).json('no user found');
+  }
 });
 
 /* API endpoint - METHOD - response
