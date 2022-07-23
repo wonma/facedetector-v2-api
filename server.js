@@ -1,4 +1,8 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+const myPlaintextPassword = '';
+const someOtherPlaintextPassword = 'not-bacon';
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
@@ -73,18 +77,18 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-  // 1. Read request
   const { email, password } = req.body;
-  if (
-    email === database.users[0].email &&
-    password === database.users[0].password
-  ) {
-    res.json('login permitted!');
-  } else {
-    res.status(400).json('user not found');
-  }
-  // 2. Check with DB & Send response
-
+  const dbEmail = email === database.users[database.users.length - 1].email;
+  const dbPassword = database.users[database.users.length - 1].password;
+  bcrypt.compare(password, dbPassword, (err, result) => {
+    if (result && dbEmail) {
+      res.json('login permitted!');
+    } else if (err) {
+      throw err;
+    } else {
+      res.status(400).json('user not found');
+    }
+  });
   // User Data가 request body에 쓰여지는건 맞는가?
   // 유저가 'abcde'라고 타이핑해서 submit했을텐데
   // 해당 data가 서버에 들어오는 순간 hash되므로, req.body를 출력해보일때는
@@ -93,19 +97,21 @@ app.post('/signin', (req, res) => {
 
 app.post('/register', (req, res) => {
   const { email, fisrtName, lastName, password } = req.body;
-  database.users.push({
-    id: '103',
-    email: email,
-    firstName: fisrtName,
-    lastName: lastName,
-    password: password,
-    createdDate: new Date(),
-    activity: {
-      totalScore: 0,
-      totalCredit: 300
-    }
+  bcrypt.hash(password, saltRounds, (err, hash) => {
+    database.users.push({
+      id: '103',
+      email: email,
+      firstName: fisrtName,
+      lastName: lastName,
+      password: hash,
+      createdDate: new Date(),
+      activity: {
+        totalScore: 0,
+        totalCredit: 300
+      }
+    });
+    res.json(database.users[database.users.length - 1]);
   });
-  res.json(database.users[database.users.length - 1]);
 });
 
 app.put('/image', (req, res) => {
