@@ -1,12 +1,12 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 const saltRounds = 10;
-const myPlaintextPassword = '';
-const someOtherPlaintextPassword = 'not-bacon';
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cors());
 
 app.listen(3000, () => {
   console.log('app is runnning on port 3000');
@@ -40,36 +40,6 @@ const database = {
     }
   ]
 };
-
-// Fake DB - My Answer
-// const users = [
-//   {
-//     id: 100,
-//     email: 'wonmadesign@gmail.com',
-//     firstName: 'Wonmi',
-//     lastName: 'Kwon',
-//     password: '12345',
-//     createdDate: new Date(),
-//     activity: {
-//       recentScore: 0,
-//       totalScore: 100,
-//       totalCredit: 300
-//     }
-//   },
-//   {
-//     id: 101,
-//     email: 'josh.thomp86@gmail.com',
-//     firstName: 'Josh',
-//     lastName: 'Thompson',
-//     password: '678910',
-//     createdDate: new Date(),
-//     activity: {
-//       recentScore: 0,
-//       totalScore: 200,
-//       totalCredit: 250
-//     }
-//   }
-// ];
 
 app.get('/', (req, res) => {
   // root route(?)에 GET하여 요청하는 정보는 뭘까? 추측: index.html문서가 될 것 같습니다.
