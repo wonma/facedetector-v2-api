@@ -47,13 +47,15 @@ app.get('/', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
+  const lastUser = database.users[database.users.length - 1];
   const { email, password } = req.body;
-  const dbEmail = database.users[database.users.length - 1].email;
-  const dbPassword = database.users[database.users.length - 1].password;
-  console.log(email, password);
-  console.log(dbEmail, dbPassword);
-  if (dbEmail === email && dbPassword === password) {
-    res.json('success');
+  if (lastUser.email === email && lastUser.password === password) {
+    res.json({
+      id: lastUser.id,
+      firstName: lastUser.firstName,
+      email: lastUser.email,
+      activity: lastUser.activity
+    });
   } else {
     res.status(400).json('error loggin in');
   }
@@ -87,9 +89,12 @@ app.post('/register', (req, res) => {
         totalCredit: 300
       }
     });
+    const lastUser = database.users[database.users.length - 1];
     res.json({
-      result: 'success',
-      user: database.users[database.users.length - 1]
+      id: lastUser.id,
+      firstName: lastUser.firstName,
+      email: lastUser.email,
+      activity: lastUser.activity
     });
   });
 });
