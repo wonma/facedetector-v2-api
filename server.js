@@ -106,15 +106,15 @@ app.post('/register', (req, res) => {
 });
 
 app.put('/image', (req, res) => {
-  const { id, recentScore } = req.body;
+  const { id, totalScore } = req.body;
   let isIdFound = false;
   database.users.forEach(user => {
     if (user.id === id) {
-      user.totalScore += recentScore;
-      user.totalCredit -= 10;
       isIdFound = true;
+      user.totalScore = totalScore;
+      user.totalCredit -= 10;
       res.json({
-        totalScore: uer.totalScore,
+        totalScore: user.totalScore,
         totalCredit: user.totalCredit
       });
     }
@@ -145,22 +145,3 @@ app.get('/profile/:id', (req, res) => {
     res.status(400).json('no user found');
   }
 });
-
-/* API endpoint - METHOD - response
-
-/  -  GET  -  'success'메세지를 보내준다
-
-유저가 로그인할 때
-/signin  -  POST  -  user id를 보내준다? (다음 화면에서 parameter로 들어가서 개별화된 화면 나오도록)
-
-유저가 최초 등록할 때
-/register  -  POST  -  user오브젝트를 보내준다
-
-유저가 home화면으로 direct될 때
-/profile/:id  -  GET  -  user오브젝트를 보내준다
-
-유저가 이미지주소 submit할때 
-/image  -  PUT  -  user의 업데이트된 참여정보를 보내준다 (credits, total score, total attempts)
-
-
-*/
