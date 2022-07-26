@@ -21,10 +21,8 @@ const database = {
       lastName: 'Kwon',
       password: '12345',
       createdDate: new Date(),
-      activity: {
-        totalScore: 100,
-        totalCredit: 300
-      }
+      totalScore: 100,
+      totalCredit: 300
     },
     {
       id: '101',
@@ -33,10 +31,8 @@ const database = {
       lastName: 'Thompson',
       password: '678910',
       createdDate: new Date(),
-      activity: {
-        totalScore: 200,
-        totalCredit: 250
-      }
+      totalScore: 200,
+      totalCredit: 250
     }
   ]
 };
@@ -49,25 +45,31 @@ app.get('/', (req, res) => {
 app.post('/signin', (req, res) => {
   const lastUser = database.users[database.users.length - 1];
   const { email, password } = req.body;
-  if (lastUser.email === email && lastUser.password === password) {
-    res.json({
-      id: lastUser.id,
-      firstName: lastUser.firstName,
-      email: lastUser.email,
-      activity: lastUser.activity
-    });
-  } else {
-    res.status(400).json('error loggin in');
-  }
-  // bcrypt.compare(password, dbPassword, (err, result) => {
-  //   if (result && dbEmail) {
-  //     res.json('login permitted!');
-  //   } else if (err) {
-  //     throw err;
-  //   } else {
-  //     res.status(400).json('user not found');
-  //   }
-  // });
+  // if (lastUser.email === email && lastUser.password === password) {
+  //   res.json({
+  //     id: lastUser.id,
+  //     firstName: lastUser.firstName,
+  //     email: lastUser.email,
+  //     activity: lastUser.activity
+  //   });
+  // } else {
+  //   res.status(400).json('error loggin in');
+  // }
+  bcrypt.compare(password, lastUser.password, (err, result) => {
+    if (result && lastUser.email == email) {
+      res.json({
+        id: lastUser.id,
+        firstName: lastUser.firstName,
+        email: lastUser.email,
+        totalScore: lastUser.totalScore,
+        totalCredit: lastUser.totalCredit
+      });
+    } else if (err) {
+      throw err;
+    } else {
+      res.status(400).json('user not found');
+    }
+  });
   // User Data가 request body에 쓰여지는건 맞는가?
   // 유저가 'abcde'라고 타이핑해서 submit했을텐데
   // 해당 data가 서버에 들어오는 순간 hash되므로, req.body를 출력해보일때는
@@ -85,10 +87,8 @@ app.post('/register', (req, res) => {
       lastName: lastName,
       password: hash,
       createdDate: new Date(),
-      activity: {
-        totalScore: 0,
-        totalCredit: 300
-      }
+      totalScore: 0,
+      totalCredit: 300
     });
 
     // Retrieve the user from DB
@@ -99,7 +99,8 @@ app.post('/register', (req, res) => {
       id: lastUser.id,
       firstName: lastUser.firstName,
       email: lastUser.email,
-      activity: lastUser.activity
+      totalScore: lastUser.totalScore,
+      totalCredit: lastUser.totalCredit
     });
   });
 });
@@ -109,10 +110,13 @@ app.put('/image', (req, res) => {
   let isIdFound = false;
   database.users.forEach(user => {
     if (user.id === id) {
-      user.activity.totalScore += recentScore;
-      user.activity.totalCredit -= 10;
+      user.totalScore += recentScore;
+      user.totalCredit -= 10;
       isIdFound = true;
-      res.json(user.activity);
+      res.json({
+        totalScore: uer.totalScore,
+        totalCredit: user.totalCredit
+      });
     }
   });
   if (!isIdFound) {
