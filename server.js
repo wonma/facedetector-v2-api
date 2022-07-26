@@ -77,6 +77,7 @@ app.post('/signin', (req, res) => {
 app.post('/register', (req, res) => {
   const { email, firstName, lastName, password } = req.body;
   bcrypt.hash(password, saltRounds, (err, hash) => {
+    // Add a user to DB
     database.users.push({
       id: '103',
       email: email,
@@ -89,7 +90,11 @@ app.post('/register', (req, res) => {
         totalCredit: 300
       }
     });
+
+    // Retrieve the user from DB
     const lastUser = database.users[database.users.length - 1];
+
+    // Send selected data of the user to the client
     res.json({
       id: lastUser.id,
       firstName: lastUser.firstName,
